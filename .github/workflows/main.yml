@@ -12,7 +12,7 @@ jobs:
       - uses: lowlighter/metrics@latest
         with:
           user: trgchinhh
-          token: ${{ secrets.METRICS_TOKEN1 }}
+          token: ${{ secrets.METRICS_TOKEN2 }}
 
           template: classic
           base: header, repositories
