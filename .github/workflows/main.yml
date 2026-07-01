@@ -2,19 +2,48 @@ name: Metrics
 
 on:
   schedule:
-    - cron: "0 0 * * *"
+    - cron: "0 */6 * * *"   # chạy mỗi 6 giờ
   workflow_dispatch:
+  push:
+    branches: ["main"]
 
 jobs:
   github-metrics:
     runs-on: ubuntu-latest
+
+    environment:
+      name: github-pages
+      url: ${{ steps.deployment.outputs.page_url }}
+
+    permissions:
+      pages: write
+      id-token: write
+
     steps:
       - uses: lowlighter/metrics@latest
         with:
-          user: trgchinhh
+          filename: metrics.svg
           token: ${{ secrets.METRICS_TOKEN2 }}
+          user: trgchinhh
+          output_action: none
+          config_timezone: Asia/Ho_Chi_Minh
 
-          template: classic
-          base: header, repositories
+          base: header, repositories, metadata
+
+          plugin_lines: yes
+          plugin_lines_history_limit: 1
+          plugin_lines_sections: base
+          plugin_lines_delay: 30
 
           plugin_languages: yes
+          plugin_languages_details: percentage, bytes-size
+
+          plugin_followup: yes
+          plugin_followup_sections: user
+
+      - uses: actions/upload-pages-artifact@v4
+        with:
+          path: /metrics_renders
+
+      - uses: actions/deploy-pages@v4
+        id: deployment
